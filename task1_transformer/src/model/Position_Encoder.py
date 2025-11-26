@@ -24,7 +24,7 @@ class PositionalEncoder(nn.Module):
 
         @torch.jit.script
         def splice_by_size(source, target):
-            length = target.size(1);
+            length = target.size(1)
             return source[:, :length]
 
         self.splice_by_size = splice_by_size
