@@ -1,9 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-import torch.nn.functional as functional
 import math
-import logging
 
 class PositionalEncoder(nn.Module):
     def __init__(self, d_model, max_len=200, dropout=0.1):
@@ -29,4 +26,3 @@ class PositionalEncoder(nn.Module):
         x = x + self.pe[:, :seq_len]
 
         return self.dropout(x)
-
