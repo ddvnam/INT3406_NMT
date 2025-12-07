@@ -1,56 +1,57 @@
-import re
 import spacy
-from torchtext import data
+from typing import List
 from underthesea import word_tokenize
+from utils import clean_text
 
 class Tokenizer:
-    def __init__(self, language):
-        if language == 'en':
-            self.nlp = spacy.load('en_core_web_sm')
-        elif language == 'vi':
-            self.nlp = None
+    """
+    Lớp bao đóng các thư viện tách từ (Spacy cho tiếng Anh, Underthesea cho tiếng Việt).
+    """
+    def __init__(self, language: str):
+        """
+        Khởi tạo tokenizer dựa trên ngôn ngữ.
+        
+        Args:
+            language (str): Mã ngôn ngữ ('en' hoặc 'vi').
+        """
         self.language = language
+        self.nlp = None
+        
+        if language == 'en':
+            try:
+                self.nlp = spacy.load('en_core_web_sm')
+            except OSError:
+                print("Downloading en_core_web_sm...")
+                from spacy.cli import download
+                download('en_core_web_sm')
+                self.nlp = spacy.load('en_core_web_sm')
+        elif language == 'vi':
+            # Underthesea không cần load model object nặng như spacy
+            pass
+        else:
+            raise ValueError(f"Language '{language}' not supported yet.")
 
-    def tokenize(self, text):
+    def tokenize(self, text: str) -> List[str]:
+        """
+        Làm sạch và tách từ một câu văn bản.
+        
+        Args:
+            text (str): Câu đầu vào.
+            
+        Returns:
+            List[str]: Danh sách các token.
+        """
+        text = clean_text(text)
+        
         if self.language == 'en':
             return [tok.text for tok in self.nlp.tokenizer(text)]
         elif self.language == 'vi':
             return word_tokenize(text, format="text").split()
+        return text.split()
 
-    def clean_text(self, text):
-        """Chuẩn hóa văn bản: lowercase, xóa ký tự đặc biệt, xử lý khoảng trắng."""
-        text = str(text).lower()
-        # Loại bỏ các ký tự đặc biệt giữ lại dấu câu cơ bản
-        text = re.sub(r"[\*\"“”\n\\…\+\-\/\=\(\)‘•:\[\]\|’\!;]", " ", text)
-        text = re.sub(r"[ ]+", " ", text)
-        text = re.sub(r"\!+", "!", text)
-        text = re.sub(r"\,+", ",", text)
-        text = re.sub(r"\?+", "?", text)
-        return text.strip()
+if __name__ == "__main__":
+    en_tok = Tokenizer('en')
+    vi_tok = Tokenizer('vi')
     
-def create_fields(src_lang='en', tar_lang='vi'):
-    """
-    Tạo các Field của TorchText để định nghĩa cách xử lý dữ liệu.
-    
-    Args:
-        src_lang (str): Mã ngôn ngữ nguồn (ví dụ: 'en').
-        trg_lang (str): Mã ngôn ngữ đích (ví dụ: 'vi').
-        
-    Returns:
-        tuple: (SRC Field, TRG Field)
-    """
-    src_tokenizer = Tokenizer(src_lang)
-    tar_tokenizer = Tokenizer(tar_lang)
-
-    SRC = data.Field(
-        tokenize=src_tokenizer.tokenize,
-        lower=True
-    )
-    TAR = data.Field(
-        tokenize=tar_tokenizer.tokenize,
-        lower=True,
-        init_token='<sos>',
-        eos_token='<eos>'
-    )
-    return SRC, TAR
-
+    print("EN:", en_tok.tokenize("Hello, World!"))
+    print("VI:", vi_tok.tokenize("Xin chào, thế giới!"))
