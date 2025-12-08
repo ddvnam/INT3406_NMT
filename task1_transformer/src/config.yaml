@@ -10,12 +10,12 @@ model:
 # Data parameters
 data:
   # Training data paths
-  train_src: "D:/Data/AI/DeepLearning/nlp_final_project_2025/task1_transformer/data/raw/train.en.txt"
-  train_trg: "D:/Data/AI/DeepLearning/nlp_final_project_2025/task1_transformer/data/raw/train.vi.txt"
+  train_src: "task1_transformer/data/raw/train.en.txt"
+  train_trg: "task1_transformer/data/raw/train.vi.txt"
   
   # Validation data paths
-  val_src: "D:/Data/AI/DeepLearning/nlp_final_project_2025/task1_transformer/data/raw/tst2013.en.txt"
-  val_trg: "D:/Data/AI/DeepLearning/nlp_final_project_2025/task1_transformer/data/raw/tst2013.vi.txt"
+  val_src: "task1_transformer/data/raw/tst2013.en.txt"
+  val_trg: "task1_transformer/data/raw/tst2013.vi.txt"
   
   # Language codes
   src_lang: "en"
