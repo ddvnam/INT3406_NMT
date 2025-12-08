@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from norm import Norm
-from multi_head_attention import MultiHeadAttention
-from feed_forward_network import FeedForwardNetwork
+from .norm import Norm
+from .multi_head_attention import MultiHeadAttention
+from .feed_forward_network import FeedForwardNetwork
 
 class DecoderLayer(nn.Module):
     def __init__(self, d_model, heads, dropout=0.1):

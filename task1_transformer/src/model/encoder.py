@@ -7,9 +7,9 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from embeddings import Embedder, PositionalEncoder
-from encoder_layer import EncoderLayer
-from norm import Norm
+from .embeddings import Embedder, PositionalEncoder
+from .encoder_layer import EncoderLayer
+from .norm import Norm
 from shared.utils.transformer_utils import get_clones
 
 class Encoder(nn.Module):

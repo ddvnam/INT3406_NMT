@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F 
-from scaled_dot_product import ScaledDotProductAttention
+from .scaled_dot_product import ScaledDotProductAttention
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, heads, d_model, dropout=0.1):

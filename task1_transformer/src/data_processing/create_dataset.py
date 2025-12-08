@@ -7,8 +7,8 @@ from torch.nn.utils.rnn import pad_sequence
 from collections import Counter
 from typing import List, Tuple, Optional
 
-from load_data import read_data
-from preprocessing_data import Tokenizer
+from .load_data import read_data
+from .preprocessing_data import Tokenizer
 
 SOS_TOKEN = '<sos>'
 EOS_TOKEN = '<eos>'

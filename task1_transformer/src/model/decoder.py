@@ -8,9 +8,9 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from shared.utils.transformer_utils import get_clones
-from embeddings import Embedder, PositionalEncoder
-from decoder_layer import DecoderLayer
-from norm import Norm
+from .embeddings import Embedder, PositionalEncoder
+from .decoder_layer import DecoderLayer
+from .norm import Norm
 
 class Decoder(nn.Module):
     def __init__(self, vocab_size, d_model, N, heads, dropout=0.1):

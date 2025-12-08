@@ -1,7 +1,7 @@
 import spacy
 from typing import List
 from underthesea import word_tokenize
-from utils import clean_text
+from .utils import clean_text
 
 class Tokenizer:
     """
