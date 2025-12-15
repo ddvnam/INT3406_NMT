@@ -1,45 +1,74 @@
 import torch
 import torch.nn as nn
-from .encoder import Encoder
-from .decoder import Decoder
+import torch.nn.functional as F
+import math
+from .layers import EncoderLayer, DecoderLayer  
+from .norm import RMSNorm
 
 class Transformer(nn.Module):
-    def __init__(self, src_vocab_size, trg_vocab_size, d_model, N, heads, dropout= 0.1):
+    def __init__(self, config, vocab_size: int):
         super().__init__()
-        self.encoder = Encoder(src_vocab_size, d_model, N, heads, dropout)
-        self.decoder = Decoder(trg_vocab_size, d_model, N, heads, dropout)
-        self.out = nn.Linear(d_model, trg_vocab_size)
+        self.config = config
+        
+        self.embedding = nn.Embedding(vocab_size, config.d_model)
+        self.emb_dropout = nn.Dropout(config.dropout)
+
+        # Encoder
+        self.encoder_layers = nn.ModuleList(
+            [EncoderLayer(config) for _ in range(config.num_layers)]
+        )
+        self.encoder_final_norm = RMSNorm(config.d_model)
+
+        # Decoder
+
+        self.decoder_layers = nn.ModuleList(
+            [DecoderLayer(config) for _ in range(config.num_layers)]    
+        )
+
+        self.decoder_final_norm = RMSNorm(config.d_model)
+
+        # output
+        self.output_bias = nn.Parameter(torch.zeros(vocab_size))
+        self.emb_scale = math.sqrt(config.d_model)
+
+        self._init_weights()
     
-    def forward(self, src, trg, src_mask, trg_mask):
-        '''
-            Args:
-            src: Source input tensor of shape [batch_size, src_seq_len]
-            trg: Target input tensor of shape [batch_size, trg_seq_len]
-            src_mask: Source mask tensor [batch_size, 1, src_seq_len]
-            trg_mask: Target mask tensor [batch_size, 1, trg_seq_len]
+    def _init_weights(self):
+        """Initialize weights"""
+        for p in self.parameters():
+            if p.dim() > 1:
+                nn.init.xavier_uniform_(p)
 
-            Returns:
-            Output tensor of shape [batch_size, trg_seq_len, trg_vocab_size]
-        '''
-        encoder_output = self.encoder(src, src_mask)
-        decoder_output = self.decoder(trg, encoder_output, src_mask, trg_mask)
-        output = self.out(decoder_output)
-        return output
-
-def main():
-    # check the shape of output equals to trg input shape with vocab size
-    transformer = Transformer(src_vocab_size=10000, trg_vocab_size=232, d_model=512, N=6, heads=8, dropout=0.1)
-    src = torch.randint(0, 10000, (32, 40))  # [batch_size, src_seq_len]
-    trg = torch.randint(0, 232, (32, 30))  # [batch_size, trg_seq_len]
-    src_mask = torch.randn(32, 1, 40)  # [batch_size, 1, src_seq_len]
-    trg_mask = torch.randn(32, 1, 30)  # [batch_size, 1, trg_seq_len]
-    output = transformer(src, trg, src_mask, trg_mask)
-    print("Transformer output shape:", output.shape)
-    total_params = sum(p.numel() for p in transformer.parameters())
-    trainable_params = sum(p.numel() for p in transformer.parameters() if p.requires_grad)
-
-    print("Total params:", total_params)
-    print("Trainable params:", trainable_params)
     
-if __name__ == "__main__":
-    main()
+    def forward(self, src_ids: torch.Tensor, tgt_ids: torch.Tensor) -> torch.Tensor:
+        # Masks
+        src_pad = (src_ids == 0)
+        tgt_pad = (tgt_ids == 0)
+        tgt_in = tgt_ids[:, :-1]
+        tgt_pad_in = tgt_pad[:, :-1]
+        
+        # Causal mask for decoder
+        T = tgt_in.size(1)
+        tgt_causal = torch.triu(
+            torch.ones(T, T, dtype=torch.bool, device=src_ids.device), 
+            diagonal=1
+        )
+        
+        # Encoder
+        src_emb = self.emb_dropout(self.embedding(src_ids) * self.emb_scale)
+        enc_out = src_emb
+        for layer in self.encoder_layers:
+            enc_out = layer(enc_out, src_pad)
+        enc_out = self.encoder_final_norm(enc_out)
+        
+        # Decoder
+        tgt_emb = self.emb_dropout(self.embedding(tgt_in) * self.emb_scale)
+        dec_out = tgt_emb
+        for layer in self.decoder_layers:
+            dec_out = layer(dec_out, enc_out, tgt_pad_in, tgt_causal, src_pad)
+        dec_out = self.decoder_final_norm(dec_out)
+        
+        # Output projection
+        return F.linear(dec_out, self.embedding.weight, self.output_bias)
+    
+    
