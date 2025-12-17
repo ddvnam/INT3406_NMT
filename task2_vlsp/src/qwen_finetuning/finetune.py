@@ -5,7 +5,7 @@ from datasets import load_dataset, concatenate_datasets
 
 
 model_name = "unsloth/Qwen3-1.7B"
-new_model_name = r"task2_vlsp\models\qwen_lora\qwen3_1.7B_new"
+new_model_name = "../task2_vlsp/models/qwen_lora/qwen3_1.7B_new"
 
 # Load model base của Qwen
 model, tokenizer = FastLanguageModel.from_pretrained(
@@ -77,8 +77,8 @@ def apply_chat_template(example):
     )
     return {"text": text.strip()}
 
-train_ind_envi = load_dataset("json", data_files=r"..\task2_vlsp\data\processed\improved_prompts_ind_train_en2vi.jsonl", split="train")
-train_ind_vien = load_dataset("json", data_files=r"..\task2_vlsp\data\processed\improved_prompts_ind_train_vi2en.jsonl", split="train")
+train_ind_envi = load_dataset("json", data_files="../task2_vlsp/data/processed/improved_prompts_ind_train_en2vi.jsonl", split="train")
+train_ind_vien = load_dataset("json", data_files="../task2_vlsp/data/processed/improved_prompts_ind_train_vi2en.jsonl", split="train")
 
 train_ind_envi_dataset = train_ind_envi.map(apply_chat_template, remove_columns=["messages"])
 train_ind_vien_dataset = train_ind_vien.map(apply_chat_template, remove_columns=["messages"])

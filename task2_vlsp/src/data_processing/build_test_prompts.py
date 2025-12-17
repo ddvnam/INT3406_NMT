@@ -140,15 +140,16 @@ def process_dataset(src_path: str, tgt_path: str, output_path: str, lang: str,
     print(f"Saved total {total_processed} chat-formatted samples to {output_path}")
             
 def main(en_ind_traindata, vi_ind_traindata):
-    en2vi = load_dict(r"..\task2_vlsp\data\medical_terms\final_dic_en.json")
-    vi2en = load_dict(r"..\task2_vlsp\data\medical_terms\final_dic_vi.json")
+    en2vi = load_dict("../task2_vlsp/data/medical_terms/final_dic_en.json")
+    vi2en = load_dict("../task2_vlsp/data/medical_terms/final_dic_vi.json")
     
     model_en = load_sbert_model("en")
     en_terms, en_emb = build_embeddings(sorted(en2vi.keys()), model_en)
-    process_dataset(en_ind_traindata, vi_ind_traindata, r"..\task2_vlsp\data\processed\improved_prompts_ind_test_en2vi.jsonl", "en", model_en, en_terms, en_emb, en2vi, vi2en)
+    process_dataset(en_ind_traindata, vi_ind_traindata, "../task2_vlsp/data/processed/improved_prompts_ind_test_en2vi.jsonl", "en", model_en, en_terms, en_emb, en2vi, vi2en)
    
     model_vi = load_sbert_model("vi")
     vi_terms, vi_emb = build_embeddings(sorted(vi2en.keys()), model_vi)
-    process_dataset(vi_ind_traindata, en_ind_traindata, r"..\task2_vlsp\data\processed\improved_prompts_ind_test_vi2en.jsonl", "vi", model_vi, vi_terms, vi_emb, en2vi, vi2en)
+    process_dataset(vi_ind_traindata, en_ind_traindata, "../task2_vlsp/data/processed/improved_prompts_ind_test_vi2en.jsonl", "vi", model_vi, vi_terms, vi_emb, en2vi, vi2en)
 
-main(r"..\task2_vlsp\data\raw\test.en", r"..\task2_vlsp\data\raw\test.vi")
+main("../task2_vlsp/data/filtered_raw_data/test.en", "../task2_vlsp/data/filtered_raw_data/test.vi")
+done

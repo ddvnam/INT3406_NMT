@@ -3,8 +3,8 @@ import sacrebleu
 import numpy as np
 
 # Tải file tham chiếu đã dịch
-vi_ref_file = r"..\task2_vlsp\data\raw\test.vi"
-en_ref_file = r"..\task2_vlsp\data\raw\test.en"
+vi_ref_file = "../task2_vlsp/data/filtered_raw_data/test.vi"
+en_ref_file = "../task2_vlsp/data/filtered_raw_data/test.en"
 
 with open(vi_ref_file, 'r', encoding='utf-8') as f:
     envi = [line.strip() for line in f if line.strip()]
@@ -21,7 +21,7 @@ for i in range(0, total_sentences, BATCH_SIZE):
     references.append(all_refs[i])
 
 # Tải file model dịch
-jsonl_file = r"task2_vlsp\tests\translation.jsonl"
+jsonl_file = "../task2_vlsp/tests/translation.jsonl"
 predictions = []
 
 with open(jsonl_file, 'r', encoding='utf-8') as f:

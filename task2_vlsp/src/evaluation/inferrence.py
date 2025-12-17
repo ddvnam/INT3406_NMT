@@ -19,7 +19,7 @@ def extract_output(text: str) -> str:
     return cleaned_text
 
 def main():
-    model_name = r"task2_vlsp\models\qwen_lora\qwen3_1.7B_new"
+    model_name = "../task2_vlsp/models/qwen_lora/qwen3_1.7B_new"
     max_seq_length = 1024
     dtype = None
 
@@ -34,9 +34,9 @@ def main():
     FastLanguageModel.for_inference(model)
 
     # Load tập test
-    test_envi = load_dataset("json", data_files=r"..\task2_vlsp\data\processed\improved_prompts_ind_test_en2vi.jsonl", split="train")
+    test_envi = load_dataset("json", data_files="../task2_vlsp/data/processed/improved_prompts_ind_test_en2vi.jsonl", split="train")
     prompts_envi = [example["messages"] for example in test_envi]
-    test_vien = load_dataset("json", data_files=r"..\task2_vlsp\data\processed\improved_prompts_ind_test_vi2en.jsonl", split="train")
+    test_vien = load_dataset("json", data_files="../task2_vlsp/data/processed/improved_prompts_ind_test_vi2en.jsonl", split="train")
     prompts_vien = [example["messages"] for example in test_vien]
 
     all_prompts = prompts_envi + prompts_vien
@@ -76,7 +76,7 @@ def main():
     print(f"Thời gian infer: {runtime}")
 
     # Lưu file dịch của model
-    output_jsonl_filename = r"task2_vlsp\tests\translation.jsonl"
+    output_jsonl_filename = "../task2_vlsp/tests/translation.jsonl"
 
     try:
         with open(output_jsonl_filename, 'w', encoding='utf-8') as f:

@@ -1,0 +1,64 @@
+import json
+import re
+
+VN_CHARS = 'áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệóòỏõọôốồổỗộơớờởỡợíìỉĩịúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÍÌỈĨỊÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ'
+EN_CHARS = r"a-zA-Z"
+VI_CHARS = rf"a-zA-Z{VN_CHARS}"
+
+def check_character_en(en_sen: str) -> bool:
+    return bool(re.search(EN_CHARS, en_sen))
+
+def check_character_vi(vi_sen: str) -> bool:
+    return bool(re.search(VI_CHARS, vi_sen))
+
+if __name__ == '__main__':
+    
+    f_en, f_vi = open("../task2_vlsp/data/raw/train.en", 'r', encoding='utf-8'), open("../task2_vlsp/data/raw/train.vi", 'r', encoding='utf-8')
+    pairs_CorpusTraining = set()
+    sizeTraining = 0
+    for en_line, vi_line in zip(f_en, f_vi):
+        if not isinstance(en_line.strip(), str) or not isinstance(vi_line.strip(), str) or check_character_en(en_line.strip()) or check_character_vi(vi_line.strip()):
+            continue
+        vi = vi_line.strip().lower()
+        en = en_line.strip().lower()
+        sizeTraining += 1
+        if (en, vi) in pairs_CorpusTraining:
+            continue
+        pairs_CorpusTraining.add((en, vi))
+    print(f"Size of Original Corpus Dataset Training: {sizeTraining}")
+    
+    f_en, f_vi = open("..task2_vlsp/data/raw/test.en", 'r', encoding='utf-8'), open("../task2_vlsp/data/raw/test.vi", 'r', encoding='utf-8')
+    sizeTesting = 0
+    pairs_CorpusTesting = set()
+    for en_line, vi_line in zip(f_en, f_vi):
+        if not isinstance(en_line.strip(), str) or not isinstance(vi_line.strip(), str) or check_character_en(en_line.strip()) or check_character_vi(vi_line.strip()):
+            continue
+        sizeTesting += 1
+        vi = vi_line.strip().lower()
+        en = en_line.strip().lower()
+        if (en, vi) in pairs_CorpusTesting:
+            continue
+        pairs_CorpusTesting.add((en, vi))
+    print(f"Size of Original Corpus Dataset Testing: {sizeTesting}")
+    
+    # Cleaning pairs
+    cleaned_pairs_CorpusTraining = pairs_CorpusTraining - pairs_CorpusTesting
+    
+    print(f"Size of Cleaned Corpus Training: {len(cleaned_pairs_CorpusTraining)}")
+    print(f"Size of Cleaned Corpus Testing: {len(pairs_CorpusTesting)}")
+    
+    cleaned_Training = cleaned_pairs_CorpusTraining
+    print(f"Final Training Dataset: {len(cleaned_Training)}")
+    print(f"Final Testing Dataset: {len(pairs_CorpusTesting)}")
+    
+    f_training_en = open("../task2_vlsp/data/filtered_raw_data/train.en", 'w', encoding='utf-8')
+    f_training_vi = open("../task2_vlsp/data/filtered_raw_data/train.vi", 'w', encoding='utf-8')
+    for (en, vi) in cleaned_Training:
+        f_training_en.write(f"{en}\n")
+        f_training_vi.write(f"{vi}\n")
+    
+    f_testing_en = open("../task2_vlsp/data/filtered_raw_data/test.en", 'w', encoding='utf-8')
+    f_testing_vi = open("../task2_vlsp/data/filtered_raw_data/test.vi", 'w', encoding='utf-8')
+    for (en, vi) in pairs_CorpusTesting:
+        f_testing_en.write(f"{en}\n")
+        f_testing_vi.write(f"{vi}\n")

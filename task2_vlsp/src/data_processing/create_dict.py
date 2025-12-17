@@ -92,11 +92,11 @@ class Dictionary_Augmentation(torch.nn.Module):
 
 if __name__ == '__main__':
     NLP = spacy.load("en_core_web_sm")
-    with open(r"..\task2_vlsp\data\raw\train.en", 'r', encoding='utf-8') as en_ind_corpus:
+    with open("../task2_vlsp/data/filtered_raw_data/train.en", 'r', encoding='utf-8') as en_ind_corpus:
         en_list = []
         for i, line in enumerate(en_ind_corpus):
                 en_list.append(line.strip())
     aug_dic_method = Dictionary_Augmentation("VietAI/envit5-translation", in_lang="en")
     final_mapping = aug_dic_method(en_list)
-    write_to_json_file(final_mapping, {}, r"..\task2_vlsp\data\medical_terms\final_dic_en.json")
-    write_to_json_file(convert_dic(final_mapping), {}, r"..\task2_vlsp\data\medical_terms\final_dic_vi.json")
+    write_to_json_file(final_mapping, {}, "../task2_vlsp/data/medical_terms/final_dic_en.json")
+    write_to_json_file(convert_dic(final_mapping), {}, "../task2_vlsp/data/medical_terms/final_dic_vi.json")
