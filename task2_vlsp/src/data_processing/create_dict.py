@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import spacy
+import os
 
 # Đổi từ điển tiếng anh sang tiếng việt
 def convert_dic(json):
@@ -85,18 +86,26 @@ class Dictionary_Augmentation(torch.nn.Module):
 
     def save_dictionary(self, current_mapping):
         to_write = {k: list(v) for k, v in current_mapping.items()}
-        file_path = f"../task2_vlsp/data/medical_terms/final_dic_{self.language}.json"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_dir, "..", "..", "data", "medical_terms", f"final_dic_{self.language}.json")
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(to_write, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    input_path = os.path.join(base_dir, "..", "..", "data", "filtered_raw_data", "train.en")
+    
     NLP = spacy.load("en_core_web_sm")
-    with open("../task2_vlsp/data/filtered_raw_data/train.en", 'r', encoding='utf-8') as en_ind_corpus:
+    with open(input_path, 'r', encoding='utf-8') as en_ind_corpus:
         en_list = []
         for i, line in enumerate(en_ind_corpus):
                 en_list.append(line.strip())
     aug_dic_method = Dictionary_Augmentation("VietAI/envit5-translation", in_lang="en")
     final_mapping = aug_dic_method(en_list)
-    write_to_json_file(final_mapping, {}, "../task2_vlsp/data/medical_terms/final_dic_en.json")
-    write_to_json_file(convert_dic(final_mapping), {}, "../task2_vlsp/data/medical_terms/final_dic_vi.json")
+    
+    output_en = os.path.join(base_dir, "..", "..", "data", "medical_terms", "final_dic_en.json")
+    output_vi = os.path.join(base_dir, "..", "..", "data", "medical_terms", "final_dic_vi.json")
+    
+    write_to_json_file(final_mapping, {}, output_en)
+    write_to_json_file(convert_dic(final_mapping), {}, output_vi)

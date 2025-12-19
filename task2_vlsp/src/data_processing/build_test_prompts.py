@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 import sentence_transformers
 from sentence_transformers import SentenceTransformer, util
 from tqdm import tqdm
-
+import os
 
 TOP_K = 5
 SIM_THRESHOLD = 0.6
@@ -138,18 +138,19 @@ def process_dataset(src_path: str, tgt_path: str, output_path: str, lang: str,
             total_processed += len(batch_results)
 
     print(f"Saved total {total_processed} chat-formatted samples to {output_path}")
-            
+
 def main(en_ind_traindata, vi_ind_traindata):
-    en2vi = load_dict("../task2_vlsp/data/medical_terms/final_dic_en.json")
-    vi2en = load_dict("../task2_vlsp/data/medical_terms/final_dic_vi.json")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    en2vi = load_dict(os.path.join(base_dir, "..", "..", "data", "medical_terms", "final_dic_en.json"))
+    vi2en = load_dict(os.path.join(base_dir, "..", "..", "data", "medical_terms", "final_dic_vi.json"))
     
     model_en = load_sbert_model("en")
     en_terms, en_emb = build_embeddings(sorted(en2vi.keys()), model_en)
-    process_dataset(en_ind_traindata, vi_ind_traindata, "../task2_vlsp/data/processed/improved_prompts_ind_test_en2vi.jsonl", "en", model_en, en_terms, en_emb, en2vi, vi2en)
+    process_dataset(en_ind_traindata, vi_ind_traindata, os.path.join(base_dir, "..", "..", "data", "processed", "improved_prompts_ind_test_en2vi.jsonl"), "en", model_en, en_terms, en_emb, en2vi, vi2en)
    
     model_vi = load_sbert_model("vi")
     vi_terms, vi_emb = build_embeddings(sorted(vi2en.keys()), model_vi)
-    process_dataset(vi_ind_traindata, en_ind_traindata, "../task2_vlsp/data/processed/improved_prompts_ind_test_vi2en.jsonl", "vi", model_vi, vi_terms, vi_emb, en2vi, vi2en)
+    process_dataset(vi_ind_traindata, en_ind_traindata, os.path.join(base_dir, "..", "..", "data", "processed", "improved_prompts_ind_test_vi2en.jsonl"), "vi", model_vi, vi_terms, vi_emb, en2vi, vi2en)
 
-main("../task2_vlsp/data/filtered_raw_data/test.en", "../task2_vlsp/data/filtered_raw_data/test.vi")
-done
+base_dir = os.path.dirname(os.path.abspath(__file__))
+main(os.path.join(base_dir, "..", "..", "data", "filtered_raw_data", "test.en"), os.path.join(base_dir, "..", "..", "data", "filtered_raw_data", "test.vi"))
