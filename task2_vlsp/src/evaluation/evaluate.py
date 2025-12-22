@@ -23,7 +23,7 @@ references = []
 for i in range(0, total_sentences, BATCH_SIZE):
     references.append(all_refs[i])
 
-jsonl_file = os.path.join(base_dir, "..", "..", "tests", "translation.jsonl")
+jsonl_file = os.path.join(base_dir, "..", "..", "tests", "qwen - 69M - 1_epoch - finetune_translation.jsonl")
 predictions = []
 
 with open(jsonl_file, 'r', encoding='utf-8') as f:
