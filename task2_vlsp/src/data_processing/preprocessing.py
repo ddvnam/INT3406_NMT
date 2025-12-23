@@ -1,5 +1,6 @@
 import json
 import re
+import os 
 
 VN_CHARS = 'áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệóòỏõọôốồổỗộơớờởỡợíìỉĩịúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÍÌỈĨỊÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ'
 EN_CHARS = r"a-zA-Z"
@@ -12,8 +13,19 @@ def check_character_vi(vi_sen: str) -> bool:
     return bool(re.search(VI_CHARS, vi_sen))
 
 if __name__ == '__main__':
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    raw_data_dir = os.path.join(base_dir, "..", "..", "data", "raw")
+    output_dir = os.path.join(base_dir, "..", "..", "data", "filtered_raw_data")
+
+    # Tạo đường dẫn tuyệt đối cho các file input
+    train_en_path = os.path.join(raw_data_dir, "train.en")
+    train_vi_path = os.path.join(raw_data_dir, "train.vi")
+    test_en_path = os.path.join(raw_data_dir, "test.en")
+    test_vi_path = os.path.join(raw_data_dir, "test.vi")
+
+    f_en, f_vi = open(train_en_path, 'r', encoding='utf-8'), open(train_vi_path, 'r', encoding='utf-8')
     
-    f_en, f_vi = open("../task2_vlsp/data/raw/train.en", 'r', encoding='utf-8'), open("../task2_vlsp/data/raw/train.vi", 'r', encoding='utf-8')
     pairs_CorpusTraining = set()
     sizeTraining = 0
     for en_line, vi_line in zip(f_en, f_vi):
@@ -27,7 +39,8 @@ if __name__ == '__main__':
         pairs_CorpusTraining.add((en, vi))
     print(f"Size of Original Corpus Dataset Training: {sizeTraining}")
     
-    f_en, f_vi = open("..task2_vlsp/data/raw/test.en", 'r', encoding='utf-8'), open("../task2_vlsp/data/raw/test.vi", 'r', encoding='utf-8')
+    f_en, f_vi = open(test_en_path, 'r', encoding='utf-8'), open(test_vi_path, 'r', encoding='utf-8')
+    
     sizeTesting = 0
     pairs_CorpusTesting = set()
     for en_line, vi_line in zip(f_en, f_vi):
@@ -51,14 +64,22 @@ if __name__ == '__main__':
     print(f"Final Training Dataset: {len(cleaned_Training)}")
     print(f"Final Testing Dataset: {len(pairs_CorpusTesting)}")
     
-    f_training_en = open("../task2_vlsp/data/filtered_raw_data/train.en", 'w', encoding='utf-8')
-    f_training_vi = open("../task2_vlsp/data/filtered_raw_data/train.vi", 'w', encoding='utf-8')
+    # Tạo đường dẫn output
+    out_train_en_path = os.path.join(output_dir, "train.en")
+    out_train_vi_path = os.path.join(output_dir, "train.vi")
+
+    f_training_en = open(out_train_en_path, 'w', encoding='utf-8')
+    f_training_vi = open(out_train_vi_path, 'w', encoding='utf-8')
     for (en, vi) in cleaned_Training:
         f_training_en.write(f"{en}\n")
         f_training_vi.write(f"{vi}\n")
     
-    f_testing_en = open("../task2_vlsp/data/filtered_raw_data/test.en", 'w', encoding='utf-8')
-    f_testing_vi = open("../task2_vlsp/data/filtered_raw_data/test.vi", 'w', encoding='utf-8')
+    # Tạo đường dẫn output cho test
+    out_test_en_path = os.path.join(output_dir, "test.en")
+    out_test_vi_path = os.path.join(output_dir, "test.vi")
+
+    f_testing_en = open(out_test_en_path, 'w', encoding='utf-8')
+    f_testing_vi = open(out_test_vi_path, 'w', encoding='utf-8')
     for (en, vi) in pairs_CorpusTesting:
         f_testing_en.write(f"{en}\n")
         f_testing_vi.write(f"{vi}\n")
