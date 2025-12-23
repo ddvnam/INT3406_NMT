@@ -17,9 +17,9 @@ def greedy_decode(
     device = src_ids.device
     
     # Token IDs
-    bos = tokenizer.get_token_id(config.bos_token)
-    eos = tokenizer.get_token_id(config.eos_token)
-    pad = tokenizer.get_token_id(config.pad_token)
+    bos = tokenizer.piece_to_id(config.bos_token)
+    eos = tokenizer.piece_to_id(config.eos_token)
+    pad = tokenizer.piece_to_id(config.pad_token)
     
     # Encode source
     src_pad_mask = (src_ids == pad)
@@ -89,9 +89,9 @@ def beam_search_decode(
     batch_size = src_ids.size(0)
     
     # Token IDs
-    bos = tokenizer.get_token_id(config.bos_token)
-    eos = tokenizer.get_token_id(config.eos_token)
-    pad = tokenizer.get_token_id(config.pad_token)
+    bos = tokenizer.piece_to_id(config.bos_token)
+    eos = tokenizer.piece_to_id(config.eos_token)
+    pad = tokenizer.piece_to_id(config.pad_token)
     
     # Encode source (once)
     src_pad_mask = (src_ids == pad)

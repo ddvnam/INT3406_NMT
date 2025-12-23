@@ -15,14 +15,14 @@ class Transformer(nn.Module):
 
         # Encoder
         self.encoder_layers = nn.ModuleList(
-            [EncoderLayer(config) for _ in range(config.num_layers)]
+            [EncoderLayer(config) for _ in range(config.num_encoder_layers)]
         )
         self.encoder_final_norm = RMSNorm(config.d_model)
 
         # Decoder
 
         self.decoder_layers = nn.ModuleList(
-            [DecoderLayer(config) for _ in range(config.num_layers)]    
+            [DecoderLayer(config) for _ in range(config.num_decoder_layers)]    
         )
 
         self.decoder_final_norm = RMSNorm(config.d_model)

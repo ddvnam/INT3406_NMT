@@ -8,15 +8,15 @@ class FFN_SwiGLU(nn.Module):
     def __init__(self, d_model: int, d_ff: int, dropout: float):
         super().__init__()
         self.dff = d_ff
-        self.fc1 = nn.Linear(d_model, 2*d_ff, bias = False)
-        self.fc2 = nn.Linear(d_ff, d_model, bias = False)
+        self.linear1 = nn.Linear(d_model, 2*d_ff, bias = False)
+        self.linear2 = nn.Linear(d_ff, d_model, bias = False)
         self.dropout = nn.Dropout(dropout)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        h = self.fc1(x)
+        h = self.linear1(x)
         g, v = h[..., : self.dff], h[..., self.dff :]
         s = g * torch.sigmoid(g)
-        out = self.fc2(s * v)
+        out = self.linear2(s * v)
         out = self.dropout(out)
         return out
     
