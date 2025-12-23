@@ -18,8 +18,8 @@ class ModelConfig:
     d_model: int = 512
     n_heads: int = 8
     n_kv_heads: int = 4
-    num_layers: int = 3
-    num_layers: int = 3
+    num_encoder_layers: int = 3
+    num_decoder_layers: int = 3
     dropout: float = 0.1
     d_ff: int = 2048
     rope_base: float = 10000.0
@@ -62,6 +62,21 @@ def set_seed(seed: int):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+@dataclass
+class InferenceConfig:
+    CHECKPOINT_PATH: str = "checkpoints/best_model.pt"
+    SPM_MODEL_PATH: str = "models/tokenizer/spm_en_vi_joint.model"
+    MAX_LEN: int = 128
+    DEVICE: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    BEAM_SIZE: int = 3
+    TOP_K = 5
+    LENGTH_PENALTY: float = 0.6
+    DIRECTION_TOKEN = "<2vi>"
+
+
+
+
 
 
 

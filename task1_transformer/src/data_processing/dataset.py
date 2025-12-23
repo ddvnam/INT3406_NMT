@@ -35,9 +35,14 @@ class BidirectionalTranslationDataset(Dataset):
         if is_training:
             for i, (src, tgt) in enumerate(zip(src_sentences, tgt_sentences)):
                 if i % 2 == 0:
-                    self.samples.append((tokenizer.add_lang_token(src, config.vi_token), tgt, "en2vi"))
+                    input_text = self.add_lang_token(src, config.vi_token)
+                    target_text = tgt                                         
+                    self.samples.append((input_text, target_text, "en2vi"))
                 else:
-                    self.samples.append((tokenizer.add_lang_token(src, config.en_token), tgt, "vi2en"))
+                    # Output Tiếng Anh, Input Tiếng Việt
+                    input_text = self.add_lang_token(tgt, config.en_token) 
+                    target_text = src                                          
+                    self.samples.append((input_text, target_text, "vi2en"))
         else:
             for src, tgt in zip(src_sentences, tgt_sentences):
                 self.samples.append((tokenizer.add_lang_token(src, config.vi_token), tgt, "en2vi"))

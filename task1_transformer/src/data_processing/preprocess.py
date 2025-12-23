@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 from typing import List, Tuple
+import html
+import re
 import os
 
 def read_file(path: str) -> List[str]:
@@ -10,12 +12,35 @@ def read_file(path: str) -> List[str]:
         return [line.strip() for line in f]
 
 def clean_data(
-    src_sentences: List[str],
+    src_sentences: List[str], 
     tgt_sentences: List[str]
 ) -> Tuple[List[str], List[str]]:
-    """Clean parallel data"""
+    """
+    Clean parallel data:
+    1. Decode HTML entities (&apos; -> ', &quot; -> ")
+    2. Remove HTML tags (<br>, <div>...)
+    3. Remove empty rows
+    """
     df = pd.DataFrame({"src": src_sentences, "tgt": tgt_sentences})
+    
+    # --- BƯỚC 1: Xử lý HTML Entities (ví dụ: &apos; -> ') ---
+    df["src"] = df["src"].apply(lambda x: html.unescape(str(x)))
+    df["tgt"] = df["tgt"].apply(lambda x: html.unescape(str(x)))
+
+    # --- BƯỚC 2: Xóa các thẻ HTML (ví dụ: <div>, <script>) ---
+    # Pattern r'<[^>]+>' nghĩa là tìm chuỗi bắt đầu bằng < và kết thúc bằng >
+    tag_pattern = r'<[^>]+>'
+    df["src"] = df["src"].str.replace(tag_pattern, "", regex=True)
+    df["tgt"] = df["tgt"].str.replace(tag_pattern, "", regex=True)
+
+    # --- BƯỚC 3: Chuẩn hóa khoảng trắng ---
+    df["src"] = df["src"].str.replace(r'\s+', ' ', regex=True).str.strip()
+    df["tgt"] = df["tgt"].str.replace(r'\s+', ' ', regex=True).str.strip()
+
+    # --- BƯỚC 4: Lọc dòng rỗng ---
+    # Sau khi clean có thể một số dòng trở thành rỗng
     df_clean = df[ (df["src"] != "") & (df["tgt"] != "") ].copy()
+    
     return df_clean["src"].tolist(), df_clean["tgt"].tolist()
 
 def split_data(
