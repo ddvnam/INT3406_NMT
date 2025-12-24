@@ -1,4 +1,3 @@
-# src/training/scheduler.py
 import math
 
 class TransformerScheduler:
