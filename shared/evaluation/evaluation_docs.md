@@ -18,7 +18,9 @@ Quy trình tính BLEU gồm 3 thành phần chính:
 2.  Đếm số lần xuất hiện tối đa của n-gram đó trong bất kỳ câu Reference nào.
 3.  Lấy giá trị nhỏ hơn giữa (1) và (2) làm tử số.
 
-$$p_n = \frac{\sum_{C \in \{Candidates\}} \sum_{ngram \in C} Count_{clip}(ngram)}{\sum_{C' \in \{Candidates\}} \sum_{ngram' \in C'} Count(ngram')}$$
+$$
+    p_n = \frac{\sum_{C \in \{Candidates\}} \sum_{ngram \in C} Count_{clip}(ngram)}{\sum_{C' \in \{Candidates\}} \sum_{ngram' \in C'} Count(ngram')}
+$$
 
 #### B. Brevity Penalty (BP)
 

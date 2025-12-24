@@ -1,4 +1,3 @@
-# src/evaluation/metrics.py
 import torch
 from tqdm import tqdm
 from sacrebleu.metrics import BLEU, CHRF

@@ -1,4 +1,3 @@
-# src/training/trainer.py
 import torch
 import torch.optim as optim
 from tqdm import tqdm
